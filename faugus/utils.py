@@ -1089,6 +1089,7 @@ def populate_combobox_with_runners(combobox):
                 entry_path = base / entry
                 if (
                     entry_path.is_dir()
+                    and not entry.startswith(".")
                     and entry not in seen
                     and entry not in ("UMU-Latest", "LegacyRuntime")
                     and not entry.startswith("Proton-GE Latest")
