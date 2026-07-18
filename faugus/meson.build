@@ -1,9 +1,12 @@
-py.install_sources(
+install_data(
   'backup.py',
   'components.py',
   'config_manager.py',
   'ea_fix.py',
   'gamepad.py',
+  'hv_client.py',
+  'hv_manager.py',
+  'identity.py',
   'keyboard.py',
   'language_config.py',
   'launcher.py',
@@ -16,5 +19,5 @@ py.install_sources(
   'steam_setup.py',
   'tray_sni.py',
   'utils.py',
-  subdir: 'faugus',
+  install_dir: get_option('libdir') / 'uwu-launcher' / 'faugus',
 )

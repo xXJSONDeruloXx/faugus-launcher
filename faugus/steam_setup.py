@@ -69,6 +69,21 @@ def to_signed_int32(value):
     return value
 
 
+UWU_SHORTCUT_MARKER = "uwu-launcher:"
+
+
+def is_uwu_shortcut(game_info, gameid=None):
+    """Return whether a Steam shortcut belongs to UwU rather than Faugus."""
+    if not isinstance(game_info, dict):
+        return False
+    marker = str(game_info.get("ShortcutPath", ""))
+    launch_options = str(game_info.get("LaunchOptions", ""))
+    owned = marker.startswith(UWU_SHORTCUT_MARKER) or "uwu-launcher" in launch_options
+    if not owned or gameid is None:
+        return owned
+    return marker == f"{UWU_SHORTCUT_MARKER}{gameid}" or f"--game {gameid}" in launch_options
+
+
 def list_steam_account_ids():
     if not USERDATA:
         return []

@@ -1,5 +1,6 @@
 
 
+import atexit
 import gi
 import sys
 import subprocess
@@ -21,16 +22,17 @@ from faugus.utils import *
 from faugus.ea_fix import *
 from faugus.steam_setup import IS_STEAM_FLATPAK
 from faugus.migration import fix_legacy_shortcut_icons
+from faugus.hv_client import HvError, RuntimeLease
 
 if IS_FLATPAK:
-    GLib.set_prgname("io.github.Faugus.faugus-launcher")
+    GLib.set_prgname("io.github.xXJSONDeruloXx.uwu-launcher")
 else:
-    GLib.set_prgname("faugus-launcher")
+    GLib.set_prgname("uwu-launcher")
 
 os.makedirs(COMPATIBILITY_DIR, exist_ok=True)
 fix_legacy_shortcut_icons()
 
-_ = setup_gettext('faugus-launcher')
+_ = setup_gettext('uwu-launcher')
 
 _env_set = set()
 
@@ -41,11 +43,14 @@ def set_env(key, value):
 
 
 class FaugusRun(HiDpiMixin):
-    def __init__(self, message, command=None, pre_launch_command="", post_launch_command=""):
+    def __init__(self, message, command=None, pre_launch_command="", post_launch_command="",
+                 hv_enabled=False, hv_game_id=""):
         self.message = message
         self.command = command
         self.pre_launch_command = pre_launch_command
         self.post_launch_command = post_launch_command
+        self.hv_enabled = bool(hv_enabled)
+        self.hv_lease = RuntimeLease(hv_game_id) if self.hv_enabled else None
         self.process = None
         self.splash_window = None
         self.log_window = None
@@ -55,6 +60,7 @@ class FaugusRun(HiDpiMixin):
         self.load_config()
         load_frame_css()
         signal.signal(signal.SIGUSR1, self.on_process_exit)
+        atexit.register(self.release_hv)
 
     def run(self):
         def run_process():
@@ -71,6 +77,7 @@ class FaugusRun(HiDpiMixin):
         self.loop.run()
 
         self.process_thread.join()
+        self.release_hv()
         sys.exit(0)
 
     def start_process(self):
@@ -151,7 +158,14 @@ class FaugusRun(HiDpiMixin):
         if not os.environ.get("WINEPREFIX"):
             if not os.environ.get("PROTONPATH") == "umu-sniper":
                 set_env("WINEPREFIX", f"{self.default_prefix}/default")
-                set_env("PROTONPATH", f"{resolve_protonpath(self.default_runner)}")
+                resolved_runner = resolve_protonpath(self.default_runner)
+                if resolved_runner and resolved_runner != "UMU-Proton Latest":
+                    set_env("PROTONPATH", str(resolved_runner))
+
+        # UMU-Proton is UMU's built-in/default runner, not an on-disk folder.
+        if os.environ.get("PROTONPATH") == "UMU-Proton Latest":
+            os.environ.pop("PROTONPATH", None)
+            _env_set.discard("PROTONPATH")
 
         if not os.environ.get("GAMEID"):
             set_env("PROTONFIXES_DISABLE", "1")
@@ -206,6 +220,39 @@ class FaugusRun(HiDpiMixin):
         print(f"{self.message}\n")
 
         self.execute_final_command()
+
+    def acquire_hv(self):
+        if not self.hv_lease or self.hv_lease.active:
+            return
+
+        def update_ui():
+            if self.splash_window:
+                self.label.set_text(_("Starting CPUID compatibility…"))
+            return False
+
+        GLib.idle_add(update_ui)
+        self.hv_lease.acquire()
+        print("CPUID compatibility acquired for this hosted game.", flush=True)
+
+    def release_hv(self):
+        if self.hv_lease and self.hv_lease.active:
+            self.hv_lease.release()
+            print("CPUID compatibility released.", flush=True)
+
+    def show_hv_error(self, error):
+        done = Event()
+
+        def build_and_show():
+            show_message_dialog(
+                _("CPUID Compatibility needs setup"),
+                str(error),
+                callback=lambda _ok: done.set(),
+            )
+            return False
+
+        GLib.idle_add(build_and_show)
+        done.wait()
+        self.loop.quit()
 
     def execute_final_command(self):
 
@@ -285,6 +332,14 @@ class FaugusRun(HiDpiMixin):
         for cmd in cmds_to_run:
             start_and_watch(cmd)
 
+        if self.hv_enabled:
+            try:
+                self.acquire_hv()
+            except HvError as error:
+                self.close_splash_window()
+                self.show_hv_error(error)
+                return
+
         if self.pre_launch_command:
             try:
                 subprocess.Popen(self.pre_launch_command, shell=True)
@@ -293,14 +348,19 @@ class FaugusRun(HiDpiMixin):
 
         game_cmd = popen_prefix + shlex.split(self.message)
         self.start_time = time.time()
-        start_and_watch(game_cmd, is_game=True)
+        try:
+            start_and_watch(game_cmd, is_game=True)
+        except Exception as error:
+            self.release_hv()
+            self.close_splash_window()
+            self.show_hv_error(error)
 
     def show_donate_dialog(self):
         done = Event()
         result = {"checked": False}
 
         def build_and_show():
-            dialog = Gtk.Dialog(title="Faugus")
+            dialog = Gtk.Dialog(title="UwU Launcher")
             dialog.set_default_size(10, 10)
             hide_dialog_action_area(dialog)
             dialog.set_decorated(False)
@@ -340,7 +400,7 @@ class FaugusRun(HiDpiMixin):
             texture = self.new_texture_from_image(FAUGUS_PNG_RASTER, 75, 75)
             image = new_picture(texture)
 
-            label = Gtk.Label(label=_("Are you enjoying Faugus?"))
+            label = Gtk.Label(label=_("Are you enjoying UwU Launcher?"))
             label.set_halign(Gtk.Align.CENTER)
 
             label2 = Gtk.Label(
@@ -457,7 +517,7 @@ class FaugusRun(HiDpiMixin):
         self.disable_updates = self.cfg.config.get('disable-updates', 'False') == 'True'
 
     def show_splash(self):
-        self.splash_window = Gtk.Window(title="Faugus")
+        self.splash_window = Gtk.Window(title="UwU Launcher")
         self.splash_window.set_decorated(False)
         self.splash_window.set_resizable(False)
         self.splash_window.set_default_size(280, 10)
@@ -639,6 +699,8 @@ class FaugusRun(HiDpiMixin):
 
     def on_process_exit(self, pid, condition):
         import psutil
+
+        self.release_hv()
 
         def kill_child_proc():
 
@@ -839,6 +901,8 @@ def main():
     parser.add_argument("--game")
     parser.add_argument("--pre-launch-command", default="")
     parser.add_argument("--post-launch-command", default="")
+    parser.add_argument("--hv", action="store_true")
+    parser.add_argument("--hv-game-id", default="")
 
     args = parser.parse_args()
 
@@ -848,9 +912,17 @@ def main():
             return
 
         launch_options = build_launch_command(game)
-        FaugusRun(launch_options, None, game.get("pre_launch_command", ""), game.get("post_launch_command", "")).run()
+        hv_enabled = game.get("hv_enabled", True) is not False and game.get("runner") != "Steam"
+        FaugusRun(
+            launch_options, None,
+            game.get("pre_launch_command", ""), game.get("post_launch_command", ""),
+            hv_enabled=hv_enabled, hv_game_id=game.get("gameid", ""),
+        ).run()
     else:
-        FaugusRun(args.message, args.command, args.pre_launch_command, args.post_launch_command).run()
+        FaugusRun(
+            args.message, args.command, args.pre_launch_command, args.post_launch_command,
+            hv_enabled=args.hv, hv_game_id=args.hv_game_id,
+        ).run()
 
 
 if __name__ == "__main__":

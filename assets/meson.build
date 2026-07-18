@@ -1,26 +1,26 @@
 install_data(
-  'faugus-launcher-raster.png',
+  'uwu-launcher-raster.png',
   'faugus-notification.ogg',
   'gamecontrollerdb.txt',
 )
 
 install_data(
-  'faugus-add-symbolic.svg',
-  'faugus-kill-symbolic.svg',
-  'faugus-play-symbolic.svg',
-  'faugus-settings-symbolic.svg',
-  'faugus-stop-symbolic.svg',
+  'uwu-add-symbolic.svg',
+  'uwu-kill-symbolic.svg',
+  'uwu-play-symbolic.svg',
+  'uwu-settings-symbolic.svg',
+  'uwu-stop-symbolic.svg',
   install_dir: get_option('datadir') / 'icons' / 'hicolor' / 'scalable' / 'actions',
 )
 
 install_data(
-  'faugus-launcher.svg',
-  'faugus-mono.svg',
+  'uwu-launcher.svg',
+  'uwu-mono.svg',
   install_dir: get_option('datadir') / 'icons' / 'hicolor' / 'scalable' / 'apps',
 )
 
 install_data(
-  'faugus-launcher.svg',
+  'uwu-launcher.svg',
   install_dir: get_option('datadir') / 'icons' / 'hicolor' / 'scalable' / 'apps',
-  rename: 'io.github.Faugus.faugus-launcher.svg',
+  rename: 'io.github.xXJSONDeruloXx.uwu-launcher.svg',
 )

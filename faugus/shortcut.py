@@ -16,16 +16,16 @@ from faugus.steam_setup import LOSSLESS_DLL
 from faugus.migration import fix_legacy_shortcut_icons
 
 if IS_FLATPAK:
-    GLib.set_prgname("io.github.Faugus.faugus-launcher")
+    GLib.set_prgname("io.github.xXJSONDeruloXx.uwu-launcher")
 else:
-    GLib.set_prgname("faugus-launcher")
+    GLib.set_prgname("uwu-launcher")
 
-_ = setup_gettext('faugus-launcher')
+_ = setup_gettext('uwu-launcher')
 
 
 class CreateShortcut(Gtk.ApplicationWindow, HiDpiMixin):
     def __init__(self, file_path):
-        super().__init__(title="Faugus")
+        super().__init__(title="UwU Launcher")
         self.file_path = file_path
         self.set_resizable(False)
 
@@ -80,6 +80,11 @@ class CreateShortcut(Gtk.ApplicationWindow, HiDpiMixin):
         self.checkbox_disable_hidraw = Gtk.CheckButton(label=_("Disable Hidraw"))
         self.checkbox_disable_hidraw.set_tooltip_text(_("May fix gamepad issues with some games"))
         self.checkbox_prevent_sleep = Gtk.CheckButton(label=_("Prevent Sleep"))
+        self.checkbox_hv = Gtk.CheckButton(label=_("Use CPUID Compatibility"))
+        self.checkbox_hv.set_tooltip_text(_(
+            "Starts CPUID compatibility before this hosted game and stops it after the last enabled game exits."
+        ))
+        self.checkbox_hv.set_active(True)
 
         self.button_cancel = Gtk.Button(label=_("Cancel"))
         self.button_cancel.connect("clicked", self.on_cancel_clicked)
@@ -150,6 +155,7 @@ class CreateShortcut(Gtk.ApplicationWindow, HiDpiMixin):
         self.grid_shortcut_icon.set_margin_top(10)
         self.grid_shortcut_icon.set_margin_bottom(10)
 
+        self.grid_tools.append(self.checkbox_hv)
         self.grid_tools.append(self.checkbox_mangohud)
         self.grid_tools.append(self.checkbox_gamemode)
         self.grid_tools.append(self.checkbox_prevent_sleep)
@@ -186,7 +192,7 @@ class CreateShortcut(Gtk.ApplicationWindow, HiDpiMixin):
                 self.button_lossless.set_sensitive(True)
             else:
                 self.button_lossless.set_sensitive(False)
-                self.button_lossless.set_tooltip_text(_("Lossless.dll NOT FOUND. If it's installed, go to Faugus's settings and set the location."))
+                self.button_lossless.set_tooltip_text(_("Lossless.dll NOT FOUND. If it's installed, go to UwU Launcher's settings and set the location."))
         else:
             self.button_lossless.set_sensitive(False)
             self.button_lossless.set_tooltip_text(_("Lossless Scaling Vulkan Layer NOT INSTALLED."))
@@ -262,7 +268,7 @@ class CreateShortcut(Gtk.ApplicationWindow, HiDpiMixin):
         title = self.entry_title.get_text()
         title_formatted = format_title(title)
 
-        addapp_bat = f"{os.path.dirname(self.file_path)}/faugus-{title_formatted}.bat"
+        addapp_bat = f"{os.path.dirname(self.file_path)}/uwu-{title_formatted}.bat"
         game_arguments = self.entry_game_arguments.get_text()
 
         if self.addapp_enabled:
@@ -337,12 +343,14 @@ class CreateShortcut(Gtk.ApplicationWindow, HiDpiMixin):
             hook_args += f' --pre-launch-command "{self.pre_launch_command}"'
         if self.post_launch_command:
             hook_args += f' --post-launch-command "{self.post_launch_command}"'
+        if self.checkbox_hv.get_active():
+            hook_args += f' --hv --hv-game-id "{title_formatted}"'
 
         if IS_FLATPAK:
             desktop_file_content = (
                 f'[Desktop Entry]\n'
                 f'Name={title}\n'
-                f'Exec=flatpak run --command={LAUNCHER_PATH} io.github.Faugus.faugus-launcher {LAUNCHER_MODULE_ARGS}--run "{command}"{hook_args}\n'
+                f'Exec=flatpak run --command={LAUNCHER_PATH} io.github.xXJSONDeruloXx.uwu-launcher {LAUNCHER_MODULE_ARGS}--run "{command}"{hook_args}\n'
                 f'Icon={new_icon_path}\n'
                 f'Type=Application\n'
                 f'Categories=Game;\n'
@@ -362,14 +370,14 @@ class CreateShortcut(Gtk.ApplicationWindow, HiDpiMixin):
         os.makedirs(APP_DIR, exist_ok=True)
         os.makedirs(DESKTOP_DIR, exist_ok=True)
 
-        applications_shortcut_path = f"{APP_DIR}/{title_formatted}.desktop"
+        applications_shortcut_path = f"{APP_DIR}/uwu-{title_formatted}.desktop"
 
         with open(applications_shortcut_path, 'w') as desktop_file:
             desktop_file.write(desktop_file_content)
 
         os.chmod(applications_shortcut_path, 0o755)
 
-        desktop_shortcut_path = f"{DESKTOP_DIR}/{title_formatted}.desktop"
+        desktop_shortcut_path = f"{DESKTOP_DIR}/uwu-{title_formatted}.desktop"
         shutil.copyfile(applications_shortcut_path, desktop_shortcut_path)
         os.chmod(desktop_shortcut_path, 0o755)
 
@@ -420,7 +428,7 @@ def main():
         cfg.config.get('accent-color', 'system'),
     )
 
-    app = Gtk.Application(application_id="io.github.Faugus.faugus-launcher")
+    app = Gtk.Application(application_id="io.github.xXJSONDeruloXx.uwu-launcher")
 
     def on_activate(app):
         win = CreateShortcut(exec_path)

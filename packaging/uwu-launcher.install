@@ -1,0 +1,20 @@
+post_install() {
+    systemctl daemon-reload 2>/dev/null || true
+}
+
+post_upgrade() {
+    systemctl daemon-reload 2>/dev/null || true
+    systemctl try-restart uwu-hv-runtime.service 2>/dev/null || true
+}
+
+pre_remove() {
+    if [[ -x /usr/lib/uwu-launcher/hv_helper.py ]]; then
+        /usr/bin/python3 /usr/lib/uwu-launcher/hv_helper.py --backend disable_runtime 2>/dev/null || true
+    else
+        systemctl disable --now uwu-hv-runtime.service 2>/dev/null || true
+    fi
+}
+
+post_remove() {
+    systemctl daemon-reload 2>/dev/null || true
+}

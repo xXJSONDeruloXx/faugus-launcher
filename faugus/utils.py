@@ -711,7 +711,7 @@ def is_valid_image(file_path):
 
 
 def show_message_dialog(text1, text2="", parent=None, confirm_label=None, cancel_label=None, callback=None, modal=True):
-    dialog = Gtk.Dialog(title="Faugus", transient_for=parent)
+    dialog = Gtk.Dialog(title="UwU Launcher", transient_for=parent)
     hide_dialog_action_area(dialog)
     dialog.set_modal(modal)
     dialog.set_resizable(False)
@@ -1002,6 +1002,10 @@ def update_games_json():
             game.pop("favorite")
             changed = True
 
+        if "hv_enabled" not in game:
+            game["hv_enabled"] = game.get("runner") != "Steam"
+            changed = True
+
         game_id = game.get("gameid")
 
         if game_id:
@@ -1084,7 +1088,7 @@ GAME_FIELDS = [
     "lossless_performance", "lossless_hdr", "lossless_present",
     "playtime", "hidden", "prevent_sleep", "category", "icon",
     "steamgriddb_id", "pre_launch_command", "post_launch_command",
-    "steam_user",
+    "steam_user", "hv_enabled",
 ]
 
 
@@ -1106,7 +1110,7 @@ def game_to_save_dict(game, hidden=None):
 def prepare_game_kwargs(data):
     defaults = {f: "" for f in GAME_FIELDS}
     defaults.update({"playtime": 0, "hidden": False, "prevent_sleep": False,
-                     "category": False, "icon": ""})
+                     "category": False, "icon": "", "hv_enabled": True})
     return {f: data.get(f, defaults[f]) for f in GAME_FIELDS}
 
 
@@ -1198,7 +1202,7 @@ def show_launch_arguments_dialog(parent, current_launch_arguments, current_pre_l
     btn_copy.set_size_request(50, 50)
     btn_copy.set_valign(Gtk.Align.CENTER)
 
-    img = new_icon_image("faugus-play-symbolic.svg")
+    img = new_icon_image("uwu-play-symbolic.svg")
     img.add_css_class("flip-x")
     add_css_once(
         "launch_arguments_flip",

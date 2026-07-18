@@ -50,6 +50,8 @@ class ConfigManager:
             'sort': 'alpha',
             'category': 'all',
             'steam-user': 'all',
+            'hv-default': 'True',
+            'hv-onboarding-shown': 'False',
         }
 
         self.config = {}

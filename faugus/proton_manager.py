@@ -18,11 +18,11 @@ from faugus.language_config import *
 from faugus.utils import widget_children, hide_dialog_action_area, destroy_and_release, run_in_background
 
 if IS_FLATPAK:
-    GLib.set_prgname("io.github.Faugus.faugus-launcher")
+    GLib.set_prgname("io.github.xXJSONDeruloXx.uwu-launcher")
 else:
-    GLib.set_prgname("faugus-launcher")
+    GLib.set_prgname("uwu-launcher")
 
-_ = setup_gettext('faugus-launcher')
+_ = setup_gettext('uwu-launcher')
 
 VARIANTS = {
     "cachyos": {
@@ -85,7 +85,7 @@ class _StreamProgress:
 
 class ProtonDownloader(Gtk.Dialog):
     def __init__(self):
-        super().__init__(title=_("Faugus Proton Manager"))
+        super().__init__(title=_("UwU Proton Manager"))
         hide_dialog_action_area(self)
         self.set_resizable(False)
         self.set_modal(True)

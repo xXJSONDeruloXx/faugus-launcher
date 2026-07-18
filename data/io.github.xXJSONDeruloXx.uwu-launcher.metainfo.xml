@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop-application">
-  <id>io.github.Faugus.faugus-launcher</id>
-  <name>Faugus</name>
-  <developer_name>Faugus</developer_name>
-  <summary>A simple and lightweight app for running games using UMU-Launcher</summary>
-  <url type="homepage">https://github.com/Faugus/faugus-launcher</url>
-  <url type="donation">https://ko-fi.com/faugus</url>
-  <url type="bugtracker">https://github.com/Faugus/faugus-launcher/issues</url>
-  <url type="vcs-browser">https://github.com/Faugus/faugus-launcher</url>
+  <id>io.github.xXJSONDeruloXx.uwu-launcher</id>
+  <name>UwU Launcher</name>
+  <developer_name>xXJSONDeruloXx</developer_name>
+  <summary>Run games with automatic CPUID compatibility using UMU-Launcher</summary>
+  <url type="homepage">https://github.com/xXJSONDeruloXx</url>
+  <url type="bugtracker">https://github.com/xXJSONDeruloXx/hv-installer-gtk/issues</url>
+  <url type="vcs-browser">https://github.com/xXJSONDeruloXx</url>
   <project_license>MIT</project_license>
   <metadata_license>CC0-1.0</metadata_license>
   <branding>
@@ -22,6 +21,7 @@
       <li>Run Windows games directly from the .exe file</li>
       <li>Prefix management</li>
       <li>Shortcut and Steam shortcut management</li>
+      <li>Per-game CPUID Fault Emulation with automatic acquire/release</li>
     </ul>
     <p>Integrated tools:</p>
     <ul>
@@ -46,7 +46,7 @@
     <content_attribute id="drugs-alcohol">none</content_attribute>
     <content_attribute id="language-profanity">none</content_attribute>
   </content_rating>
-  <launchable type="desktop-id">io.github.Faugus.faugus-launcher.desktop</launchable>
+  <launchable type="desktop-id">io.github.xXJSONDeruloXx.uwu-launcher.desktop</launchable>
   <screenshots>
     <screenshot type="default">
       <image>https://raw.githubusercontent.com/Faugus/faugus-launcher/cb11688/screenshots/main-list.png</image>
@@ -82,10 +82,10 @@
     </screenshot>
   </screenshots>
   <releases>
-    <release version="2.0.0-1" date="2026-07-12">
+    <release version="2.0.0-uwu1" date="2026-07-18">
       <description>
         <ul>
-          <li>Faugus 2.0 experimental release.</li>
+          <li>Side-by-side UwU Launcher build with hosted-game CPUID compatibility.</li>
         </ul>
       </description>
     </release>

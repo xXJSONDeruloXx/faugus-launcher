@@ -1,12 +1,15 @@
 #!/bin/sh
 
 SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
-export PYTHONPATH="$SCRIPT_DIR${PYTHONPATH:+:$PYTHONPATH}"
-if [ -d "$SCRIPT_DIR/assets/icons" ]; then
-	export XDG_DATA_DIRS="$SCRIPT_DIR/assets:${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
+if [ -d "$SCRIPT_DIR/../lib/uwu-launcher/faugus" ]; then
+	PY_ROOT=$(CDPATH= cd -- "$SCRIPT_DIR/../lib/uwu-launcher" && pwd)
+else
+	PY_ROOT=$SCRIPT_DIR
 fi
+export PYTHONPATH="$PY_ROOT${PYTHONPATH:+:$PYTHONPATH}"
 
 case "$1" in
+	--backup-daemon) exec /usr/bin/python3 -m faugus.backup --daemon;;
 	--shortcut) exec /usr/bin/python3 -m faugus.shortcut "$2";;
 	--game)     exec /usr/bin/python3 -m faugus.runner --game "$2";;
 	--run)      msg="$2"; shift 2; exec /usr/bin/python3 -m faugus.runner "$msg" "$@";;

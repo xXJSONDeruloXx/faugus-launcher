@@ -6,6 +6,7 @@ foreach lang : languages
     install_data(
       lang / 'faugus-launcher.mo',
       install_dir: get_option('localedir') / lang / 'LC_MESSAGES',
+      rename: 'uwu-launcher.mo',
     )
   endif
 endforeach

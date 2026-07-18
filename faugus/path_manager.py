@@ -64,7 +64,7 @@ class PathManager:
         source_path = os.path.join(FAUGUS_SOURCE_ROOT, 'assets', filename)
         if os.path.exists(source_path):
             return source_path
-        return PathManager.system_data('faugus-launcher', filename)
+        return PathManager.system_data('uwu-launcher', filename)
 
     @staticmethod
     def get_icon(icon_name):
@@ -132,40 +132,41 @@ LSFGVK_NATIVE_PATHS = [
 _LSFGVK_CANDIDATES = LSFGVK_FLATPAK_PATHS if IS_FLATPAK else LSFGVK_NATIVE_PATHS
 LSFGVK_PATH = next((p for p in _LSFGVK_CANDIDATES if p.exists()), _LSFGVK_CANDIDATES[-1])
 
-FAUGUS_PNG = PathManager.get_icon('io.github.Faugus.faugus-launcher.svg') if IS_FLATPAK else PathManager.get_icon('faugus-launcher.svg')
+FAUGUS_PNG = PathManager.get_icon('io.github.xXJSONDeruloXx.uwu-launcher.svg') if IS_FLATPAK else PathManager.get_icon('uwu-launcher.svg')
 
 FAUGUS_NOTIFICATION = PathManager.get_asset('faugus-notification.ogg')
-FAUGUS_PNG_RASTER = PathManager.get_asset('faugus-launcher-raster.png')
-BANNERS_DIR = PathManager.user_data('faugus-launcher/banners')
-HEROES_DIR = PathManager.user_data('faugus-launcher/heroes')
-BACKUP_DIR = PathManager.user_data("faugus-launcher/games-backup")
-FAUGUS_MONO_ICON = PathManager.get_icon('faugus-mono.svg')
-EAC_DIR = PathManager.user_data("faugus-launcher/components/eac")
-BE_DIR = PathManager.user_data("faugus-launcher/components/be")
-DOWNLOAD_DIR = PathManager.user_data('faugus-launcher/components')
-SHORTCUT_ICONS_DIR = PathManager.user_data('faugus-launcher/icons-nolauncher')
-FAUGUS_LAUNCHER_DIR = PathManager.user_config('faugus-launcher')
-PREFIXES_DIR = PathManager.user_home('Faugus')
-CONFIG_FILE_DIR = PathManager.user_config('faugus-launcher/config.json')
-LOGS_DIR = PathManager.user_data('faugus-launcher/logs')
-ENVAR_DIR = PathManager.user_config('faugus-launcher/envar.json')
-GAMES_JSON = PathManager.user_data('faugus-launcher/games.json')
-PRESETS_FILE = PathManager.user_data('faugus-launcher/presets.json')
-LATEST_GAMES = PathManager.user_state('faugus-launcher/latest-games.json')
-CATEGORIES_FILE = PathManager.user_data('faugus-launcher/categories.json')
-CUSTOM_ORDER = PathManager.user_data('faugus-launcher/custom-order.json')
-FAUGUS_LAUNCHER_SHARE_DIR = PathManager.user_data('faugus-launcher')
-FAUGUS_LAUNCHER_STATE_DIR = PathManager.user_state('faugus-launcher')
-FAUGUS_TEMP = PathManager.user_state('faugus-launcher/faugus_temp')
-RUNNING_GAMES = PathManager.user_state('faugus-launcher/running_games.json')
-FILECHOOSER_FOLDERS_FILE = PathManager.user_state('faugus-launcher/filechooser_folders.json')
-ICONS_DIR = PathManager.user_data('faugus-launcher/icons')
+FAUGUS_PNG_RASTER = PathManager.get_asset('uwu-launcher-raster.png')
+BANNERS_DIR = PathManager.user_data('uwu-launcher/banners')
+HEROES_DIR = PathManager.user_data('uwu-launcher/heroes')
+BACKUP_DIR = PathManager.user_data("uwu-launcher/games-backup")
+FAUGUS_MONO_ICON = PathManager.get_icon('uwu-mono.svg')
+EAC_DIR = PathManager.user_data("uwu-launcher/components/eac")
+BE_DIR = PathManager.user_data("uwu-launcher/components/be")
+DOWNLOAD_DIR = PathManager.user_data('uwu-launcher/components')
+SHORTCUT_ICONS_DIR = PathManager.user_data('uwu-launcher/icons-nolauncher')
+FAUGUS_LAUNCHER_DIR = PathManager.user_config('uwu-launcher')
+PREFIXES_DIR = PathManager.user_home('UwU')
+CONFIG_FILE_DIR = PathManager.user_config('uwu-launcher/config.json')
+LOGS_DIR = PathManager.user_data('uwu-launcher/logs')
+ENVAR_DIR = PathManager.user_config('uwu-launcher/envar.json')
+GAMES_JSON = PathManager.user_data('uwu-launcher/games.json')
+PRESETS_FILE = PathManager.user_data('uwu-launcher/presets.json')
+LATEST_GAMES = PathManager.user_state('uwu-launcher/latest-games.json')
+CATEGORIES_FILE = PathManager.user_data('uwu-launcher/categories.json')
+CUSTOM_ORDER = PathManager.user_data('uwu-launcher/custom-order.json')
+FAUGUS_LAUNCHER_SHARE_DIR = PathManager.user_data('uwu-launcher')
+FAUGUS_LAUNCHER_STATE_DIR = PathManager.user_state('uwu-launcher')
+FAUGUS_TEMP = PathManager.user_state('uwu-launcher/faugus_temp')
+RUNNING_GAMES = PathManager.user_state('uwu-launcher/running_games.json')
+FILECHOOSER_FOLDERS_FILE = PathManager.user_state('uwu-launcher/filechooser_folders.json')
+ICONS_DIR = PathManager.user_data('uwu-launcher/icons')
 PROTON_CACHYOS = PathManager.system_data('steam/compatibilitytools.d/proton-cachyos-slr/')
-UMU_RUN = PathManager.user_data('faugus-launcher/umu-run')
-COMPATIBILITY_DIR = Path(PathManager.get_compatibilitytools())
+UMU_RUN = PathManager.user_data('uwu-launcher/umu-run')
+# UwU keeps downloaded Proton builds private so it can coexist with Faugus.
+COMPATIBILITY_DIR = Path(PathManager.user_data('uwu-launcher/runners'))
 MANGOHUD_DIR = PathManager.find_binary('mangohud')
 GAMEMODERUN = PathManager.find_binary('gamemoderun')
-LAUNCHER_PATH = PathManager.find_binary('faugus-launcher')
+LAUNCHER_PATH = PathManager.find_binary('uwu-launcher')
 if LAUNCHER_PATH:
     LAUNCHER_MODULE_ARGS = ""
 else:
@@ -207,8 +208,8 @@ def _migrate_legacy_item(old_path, new_path):
 
 
 def _migrate_legacy_paths():
-    legacy_config = PathManager.user_config('faugus-launcher')
-    legacy_data = PathManager.user_data('faugus-launcher')
+    legacy_config = PathManager.user_config('uwu-launcher')
+    legacy_data = PathManager.user_data('uwu-launcher')
 
     for name in ('games.json', 'icons', 'icons-nolauncher', 'banners',
                  'games-backup', 'categories.txt', 'custom-order.json',

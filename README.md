@@ -1,136 +1,50 @@
-# Faugus Launcher
-A simple and lightweight app for running Windows games using [UMU-Launcher](https://github.com/Open-Wine-Components/umu-launcher)
+# UwU Launcher
 
-### Support the project
-<a href='https://ko-fi.com/K3K210EMDU' target='_blank'><img src=https://github.com/Faugus/faugus-launcher/blob/main/assets/ko-fi.png width="155" height="35"/></a>&nbsp;&nbsp;
-<a href='https://www.paypal.com/donate/?business=57PP9DVD3VWAN&no_recurring=0&currency_code=USD' target='_blank'><img src=https://github.com/Faugus/faugus-launcher/blob/main/assets/paypal.png width="155" height="35"/></a>
+UwU Launcher is a side-by-side build of [Faugus Launcher 2.0](https://github.com/Faugus/faugus-launcher) for games that need CPUID Fault Emulation. It uses [UMU-Launcher](https://github.com/Open-Wine-Components/umu-launcher) and integrates the kernel-module setup from [HV Installer GTK](https://github.com/xXJSONDeruloXx/hv-installer-gtk).
 
-# Installation
-## Arch-based distributions (AUR)
-```
-yay -S --noconfirm faugus-launcher
-```
+## What is different
 
-## Fedora / Nobara (Copr)
-```
-sudo dnf -y copr enable faugus/faugus-launcher
-sudo dnf -y install faugus-launcher
-```
+- Installs as `uwu-launcher` without replacing Faugus.
+- Uses independent config, data, state, runner, icon, shortcut, and prefix paths.
+- Adds **Use CPUID Compatibility** to every hosted game, enabled by default.
+- Acquires the module before the game process starts.
+- Keeps it active while any opted-in hosted game remains open.
+- Releases it after the final game exits, including launcher crashes via PID lease cleanup.
+- Provides installation, update, diagnostics, manual start/stop, UMIP, and automatic-runtime controls under **Settings → CPUID Compatibility Manager**.
+- Does not use Steam-log or non-Steam-shortcut watching. Steam-owned games are excluded from the hosted-game option.
 
-## Bazzite (Copr)
-```
-sudo dnf5 -y copr enable faugus/faugus-launcher
-sudo rpm-ostree -y install faugus-launcher
-```
-Restart your system.
+## Runtime design
 
-## Debian-based distributions
-### PPA (Ubuntu, Mint, KDE Neon...)
-```
-sudo dpkg --add-architecture i386
-sudo add-apt-repository -y ppa:faugus/faugus-launcher
-sudo apt update
-sudo apt install -y faugus-launcher
-```
-### .deb package
-```
-sudo dpkg --add-architecture i386
-sudo apt update
-sudo apt install -y wget
-mkdir -p ~/faugus-launcher
-wget -P ~/faugus-launcher https://github.com/Faugus/faugus-launcher/releases/download/2.0.0/faugus-launcher_2.0.0-1_all.deb
-sudo apt install -y ~/faugus-launcher/*.deb
-sudo rm -r ~/faugus-launcher
-```
+The package installs a root-owned helper and `uwu-hv-runtime.service`. Setup authorizes one desktop UID. Its Unix socket is owned and readable/writable only by that user, and every acquire request is checked against the connecting PID, UID, and process start time.
 
-## [Flatpak](https://flathub.org/apps/io.github.Faugus.faugus-launcher)
-### Installation:
-```
-flatpak install flathub io.github.Faugus.faugus-launcher
-```
-### Running:
-```
-flatpak run io.github.Faugus.faugus-launcher
-```
-### MangoHud installation:
-```
-flatpak install org.freedesktop.Platform.VulkanLayer.MangoHud/x86_64/25.08
-```
-### Important permissions:
-```
-# Allow Faugus Launcher to detect Steam users and games
-sudo flatpak override io.github.Faugus.faugus-launcher --filesystem=~/.var/app/com.valvesoftware.Steam/
-sudo flatpak override io.github.Faugus.faugus-launcher --talk-name=org.freedesktop.Flatpak
-
-# Allow Steam to run Faugus Launcher shortcuts
-sudo flatpak override com.valvesoftware.Steam --talk-name=org.freedesktop.Flatpak
-
-# Allow Steam to see Faugus Launcher games icons
-sudo flatpak override com.valvesoftware.Steam --filesystem=~/.var/app/io.github.Faugus.faugus-launcher/config/faugus-launcher/
-sudo flatpak override com.valvesoftware.Steam --filesystem=~/.config/faugus-launcher/
-```
-### Known issues:
-- The 'stop' button won't close games/apps
-- Gamescope doesn't work
-- It may not use the system theme in some DEs
+The service uses reference-counted process leases, starts CPUID Fault Emulation before acknowledging a launch, and stops the module only when it started the module itself. KVM state and locking are shared with HV Installer GTK to avoid concurrent global module changes.
 
 ## Build from source
-```
+
+```sh
 meson setup builddir --prefix=/usr
-cd builddir
-ninja
-sudo ninja install
-```
-### Dependencies:
-```
-meson ninja pygobject requests pillow vdf psutil libmanette imagemagick icoextract vulkan-tools
+meson compile -C builddir
+DESTDIR="$PWD/stage" meson install -C builddir
 ```
 
-# Usage
-[![YouTube](http://i.ytimg.com/vi/Ay6C2f55Pc8/hqdefault.jpg)](https://www.youtube.com/watch?v=Ay6C2f55Pc8)
+Run validation with:
 
-# Information
-### Default prefixes location
-```
-~/Faugus/
-```
-
-### Runners location
-```
-~/.local/share/Steam/compatibilitytools.d/
+```sh
+python3 -m py_compile hv/hv_helper.py faugus/*.py
+python3 -m unittest discover -s tests -v
+desktop-file-validate builddir/data/*.desktop
+appstreamcli validate --no-net data/io.github.xXJSONDeruloXx.uwu-launcher.metainfo.xml
 ```
 
-### Shortcut locations
-For Desktop Environments that support icons on the Desktop
-```
-~/Desktop/
-```
-For Application Launchers
-```
-~/.local/share/applications/
+## Independent paths
+
+```text
+Executable:       /usr/bin/uwu-launcher
+Private code:     /usr/lib/uwu-launcher/
+Configuration:    ~/.config/uwu-launcher/
+Application data: ~/.local/share/uwu-launcher/
+State:            ~/.local/state/uwu-launcher/
+Prefixes:         ~/UwU/
 ```
 
-### Gamepad mapping
-| Action        | Playstation | Xbox     |
-|---------------|-------------|----------|
-| Confirm       | Cross       | A        |
-| Cancel        | Circle      | B        |
-| Game menu     | Triangle    | Y        |
-| Kill          | Square      | X        |
-| Add game/app  | L1          | LB       |
-| Settings      | R1          | RB       |
-| Power options | Options     | Menu     |
-
-# Screenshots
-### Main window
-<img src=screenshots/main-list.png/><br><br>
-<img src=screenshots/main-blocks.png/><br><br>
-<img src=screenshots/main-banners.png/><br>
-### Add/Edit game
-<img src=screenshots/add-main.png/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<img src=screenshots/add-tools.png/><br>
-### Settings
-<img src=screenshots/settings.png/><br>
-### Proton Manager
-<img src=screenshots/proton-manager.png/><br>
-### Create shortcut from .exe file
-<img src=screenshots/shortcut-file.png/><br>
+The upstream Faugus installation and `~/Faugus/` are not modified.

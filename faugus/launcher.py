@@ -25,16 +25,16 @@ from faugus.migration import fix_legacy_shortcut_icons
 VERSION = "2.0.0"
 
 if IS_FLATPAK:
-    tray_icon = 'io.github.Faugus.faugus-launcher'
-    GLib.set_prgname("io.github.Faugus.faugus-launcher")
-    mono_dest = Path(PathManager.user_data('faugus-launcher/faugus-mono.svg'))
+    tray_icon = 'io.github.xXJSONDeruloXx.uwu-launcher'
+    GLib.set_prgname("io.github.xXJSONDeruloXx.uwu-launcher")
+    mono_dest = Path(PathManager.user_data('uwu-launcher/uwu-mono.svg'))
     mono_dest.parent.mkdir(parents=True, exist_ok=True)
     if not mono_dest.exists():
         shutil.copy(FAUGUS_MONO_ICON, mono_dest)
-    FAUGUS_MONO_ICON = PathManager.user_data('faugus-launcher/faugus-mono.svg')
+    FAUGUS_MONO_ICON = PathManager.user_data('uwu-launcher/uwu-mono.svg')
 else:
-    tray_icon = PathManager.get_icon('faugus-launcher.svg')
-    GLib.set_prgname("faugus-launcher")
+    tray_icon = PathManager.get_icon('uwu-launcher.svg')
+    GLib.set_prgname("uwu-launcher")
 
 
 os.makedirs(COMPATIBILITY_DIR, exist_ok=True)
@@ -46,7 +46,7 @@ os.makedirs(FAUGUS_LAUNCHER_DIR, exist_ok=True)
 os.makedirs(FAUGUS_LAUNCHER_STATE_DIR, exist_ok=True)
 fix_legacy_shortcut_icons()
 
-_ = setup_gettext('faugus-launcher')
+_ = setup_gettext('uwu-launcher')
 
 
 def convert_runner(runner):
@@ -73,7 +73,7 @@ def convert_runner(runner):
 
 class FaugusApp(Adw.Application):
     def __init__(self, start_hidden=False):
-        super().__init__(application_id="io.github.Faugus.faugus-launcher")
+        super().__init__(application_id="io.github.xXJSONDeruloXx.uwu-launcher")
         self.window = None
         self.start_hidden = start_hidden
 
@@ -106,10 +106,10 @@ class FaugusApp(Adw.Application):
 
 class Main(Gtk.ApplicationWindow, HiDpiMixin):
     def __init__(self, app):
-        super().__init__(application=app, title="Faugus")
+        super().__init__(application=app, title="UwU Launcher")
         self.add_css_class("main-window")
         self.connect("close-request", self.on_close)
-        print(f"Faugus {VERSION}")
+        print(f"UwU Launcher {VERSION}")
 
         self.fullscreen_activated = False
         self.system_tray = False
@@ -342,12 +342,24 @@ class Main(Gtk.ApplicationWindow, HiDpiMixin):
 
         GLib.timeout_add(1000, self.check_running)
 
+        onboarding = ConfigManager()
+        if onboarding.config.get('hv-onboarding-shown', 'False') != 'True':
+            onboarding.set_value('hv-onboarding-shown', True)
+            onboarding.save_config()
+            GLib.timeout_add(700, self.show_hv_onboarding)
+
+    def show_hv_onboarding(self):
+        from faugus.hv_manager import CompatibilityManager
+        manager = CompatibilityManager(self)
+        manager.present()
+        return False
+
     def update_icon(self):
         game = self.selected()
         gameid = game.gameid if game else None
 
         is_running = gameid in self.running if gameid else False
-        icon = "faugus-stop-symbolic" if is_running else "faugus-play-symbolic"
+        icon = "uwu-stop-symbolic" if is_running else "uwu-play-symbolic"
         text = _("Stop") if is_running else _("Play")
 
         self.button_play.set_child(new_icon_image(f"{icon}.svg"))
@@ -880,10 +892,10 @@ class Main(Gtk.ApplicationWindow, HiDpiMixin):
                 btn.set_tooltip_text(tooltip)
             return btn
 
-        self.button_add = create_button("faugus-add-symbolic", self.on_button_add_clicked)
-        self.button_settings = create_button("faugus-settings-symbolic", self.on_button_settings_clicked)
-        self.button_kill = create_button("faugus-kill-symbolic", self.on_button_kill_clicked, _("Kill all running games"))
-        self.button_play = create_button("faugus-play-symbolic", self.on_button_play_clicked)
+        self.button_add = create_button("uwu-add-symbolic", self.on_button_add_clicked)
+        self.button_settings = create_button("uwu-settings-symbolic", self.on_button_settings_clicked)
+        self.button_kill = create_button("uwu-kill-symbolic", self.on_button_kill_clicked, _("Kill all running games"))
+        self.button_play = create_button("uwu-play-symbolic", self.on_button_play_clicked)
 
         self.entry_search = Gtk.Entry()
         self.entry_search.set_placeholder_text(_("Search..."))
@@ -1665,7 +1677,7 @@ class Main(Gtk.ApplicationWindow, HiDpiMixin):
             pass
 
     def show_power_menu(self, widget):
-        dialog = Gtk.Dialog(title="Faugus", transient_for=self)
+        dialog = Gtk.Dialog(title="UwU Launcher", transient_for=self)
         hide_dialog_action_area(dialog)
         dialog.set_modal(True)
         dialog.set_resizable(False)
@@ -2167,7 +2179,7 @@ class Main(Gtk.ApplicationWindow, HiDpiMixin):
         if os.path.exists(banner):
             shutil.copyfile(banner, new_banner)
 
-        new_addapp_bat = f"{os.path.dirname(game.path)}/faugus-{title_formatted}.bat"
+        new_addapp_bat = f"{os.path.dirname(game.path)}/uwu-{title_formatted}.bat"
         if os.path.exists(game.addapp_bat):
             shutil.copyfile(game.addapp_bat, new_addapp_bat)
 
@@ -2631,7 +2643,7 @@ class Main(Gtk.ApplicationWindow, HiDpiMixin):
         return valid
 
     def manage_autostart_file(self, start_boot, start_minimized):
-        autostart_path = PathManager.user_home('.config/autostart/faugus-launcher.desktop')
+        autostart_path = PathManager.user_home('.config/autostart/uwu-launcher.desktop')
         autostart_dir = os.path.dirname(autostart_path)
 
         if not os.path.exists(autostart_dir):
@@ -2645,21 +2657,21 @@ class Main(Gtk.ApplicationWindow, HiDpiMixin):
                     f.write(
                         "[Desktop Entry]\n"
                         "Type=Application\n"
-                        "Name=Faugus\n"
-                        f"Exec=flatpak run io.github.Faugus.faugus-launcher{hide_arg}\n"
-                        "Icon=io.github.Faugus.faugus-launcher\n"
+                        "Name=UwU Launcher\n"
+                        f"Exec=flatpak run io.github.xXJSONDeruloXx.uwu-launcher{hide_arg}\n"
+                        "Icon=io.github.xXJSONDeruloXx.uwu-launcher\n"
                         "Categories=Game;\n"
-                        "StartupWMClass=faugus-launcher\n"
+                        "StartupWMClass=uwu-launcher\n"
                     )
                 else:
                     f.write(
                         "[Desktop Entry]\n"
                         "Type=Application\n"
-                        "Name=Faugus\n"
-                        f"Exec=faugus-launcher{hide_arg}\n"
-                        "Icon=faugus-launcher\n"
+                        "Name=UwU Launcher\n"
+                        f"Exec=uwu-launcher{hide_arg}\n"
+                        "Icon=uwu-launcher\n"
                         "Categories=Game;\n"
-                        "StartupWMClass=faugus-launcher\n"
+                        "StartupWMClass=uwu-launcher\n"
                     )
         else:
             if os.path.exists(autostart_path):
@@ -2921,6 +2933,8 @@ class Main(Gtk.ApplicationWindow, HiDpiMixin):
             else:
                 edit_game_dialog.checkbox_prevent_sleep.set_active(False)
 
+            edit_game_dialog.checkbox_hv.set_active(bool(getattr(game, "hv_enabled", True)))
+
             if edit_game_dialog.steam_users:
                 matched_user = self.find_steam_shortcut_user(title)
                 if matched_user:
@@ -2947,7 +2961,7 @@ class Main(Gtk.ApplicationWindow, HiDpiMixin):
                         shortcuts = vdf.binary_load(f)
                     if "shortcuts" in shortcuts:
                         for game in shortcuts["shortcuts"].values():
-                            if isinstance(game, dict) and "AppName" in game and game["AppName"] == title:
+                            if is_uwu_shortcut(game) and game.get("AppName") == title:
                                 return True
                 except SyntaxError:
                     continue
@@ -3041,7 +3055,7 @@ class Main(Gtk.ApplicationWindow, HiDpiMixin):
                         continue
 
                     to_remove = [app_id for app_id, game in shortcuts["shortcuts"].items() if
-                                 isinstance(game, dict) and "AppName" in game and game["AppName"] == title]
+                                 is_uwu_shortcut(game) and game.get("AppName") == title]
 
                     if to_remove:
                         for app_id in to_remove:
@@ -3137,7 +3151,7 @@ class Main(Gtk.ApplicationWindow, HiDpiMixin):
 
             title_formatted = format_title(title)
 
-            addapp_bat = f"{os.path.dirname(path)}/faugus-{title_formatted}.bat"
+            addapp_bat = f"{os.path.dirname(path)}/uwu-{title_formatted}.bat"
 
             if self.interface_mode in ("Banners", "SteamGridDB"):
                 temp_banner_path = add_game_dialog.banner_path_temp
@@ -3218,6 +3232,7 @@ class Main(Gtk.ApplicationWindow, HiDpiMixin):
                 pre_launch_command=add_game_dialog.pre_launch_command,
                 post_launch_command=add_game_dialog.post_launch_command,
                 steam_user=add_game_dialog.combobox_steam_owner.get_active_id() if launcher_id == "steam" else "",
+                hv_enabled=add_game_dialog.checkbox_hv.get_active() if launcher_id != "steam" else False,
             )
 
             desktop_shortcut_state = add_game_dialog.checkbox_shortcut_desktop.get_active()
@@ -3523,12 +3538,13 @@ class Main(Gtk.ApplicationWindow, HiDpiMixin):
             game.lossless_hdr = edit_game_dialog.lossless_hdr
             game.lossless_present = edit_game_dialog.lossless_present
             game.prevent_sleep = edit_game_dialog.checkbox_prevent_sleep.get_active()
+            game.hv_enabled = edit_game_dialog.checkbox_hv.get_active() if edit_game_dialog.combobox_launcher.get_active_id() != "steam" else False
             game.steamgriddb_id = edit_game_dialog._steamgriddb_suggestion_id or ""
 
             title_formatted = format_title(game.title)
 
             game.gameid = title_formatted
-            game.addapp_bat = f"{os.path.dirname(game.path)}/faugus-{title_formatted}.bat"
+            game.addapp_bat = f"{os.path.dirname(game.path)}/uwu-{title_formatted}.bat"
 
             if self.interface_mode in ("Banners", "SteamGridDB"):
                 temp_banner_path = edit_game_dialog.banner_path_temp
@@ -3590,8 +3606,8 @@ class Main(Gtk.ApplicationWindow, HiDpiMixin):
         destroy_and_release(edit_game_dialog)
 
     def add_shortcut(self, game, shortcut_state, shortcut, icon_temp, icon_final):
-        applications_shortcut_path = f"{APP_DIR}/{game.gameid}.desktop"
-        desktop_shortcut_path = f"{DESKTOP_DIR}/{game.gameid}.desktop"
+        applications_shortcut_path = f"{APP_DIR}/uwu-{game.gameid}.desktop"
+        desktop_shortcut_path = f"{DESKTOP_DIR}/uwu-{game.gameid}.desktop"
 
         if shortcut == "desktop" and not shortcut_state:
 
@@ -3619,7 +3635,7 @@ class Main(Gtk.ApplicationWindow, HiDpiMixin):
             desktop_file_content = (
                 f'[Desktop Entry]\n'
                 f'Name={game.title}\n'
-                f'Exec=flatpak run --command={LAUNCHER_PATH} io.github.Faugus.faugus-launcher {LAUNCHER_MODULE_ARGS}--game {game.gameid}\n'
+                f'Exec=flatpak run --command={LAUNCHER_PATH} io.github.xXJSONDeruloXx.uwu-launcher {LAUNCHER_MODULE_ARGS}--game {game.gameid}\n'
                 f'Icon={new_icon_path}\n'
                 f'Type=Application\n'
                 f'Categories=Game;\n'
@@ -3664,17 +3680,17 @@ class Main(Gtk.ApplicationWindow, HiDpiMixin):
 
                 existing_app_id = None
                 for app_id, game_info in shortcuts["shortcuts"].items():
-                    if isinstance(game_info, dict) and "AppName" in game_info and game_info["AppName"] == title:
+                    if is_uwu_shortcut(game_info, game.gameid):
                         existing_app_id = app_id
                         break
 
                 if IS_FLATPAK:
                     if IS_STEAM_FLATPAK:
                         exe = '"flatpak-spawn"'
-                        launch_options = f'--host flatpak run --command=/app/bin/faugus-launcher io.github.Faugus.faugus-launcher --game {game.gameid}'
+                        launch_options = f'--host flatpak run --command=/app/bin/uwu-launcher io.github.xXJSONDeruloXx.uwu-launcher --game {game.gameid}'
                     else:
                         exe = '"flatpak"'
-                        launch_options = f'run --command=/app/bin/faugus-launcher io.github.Faugus.faugus-launcher --game {game.gameid}'
+                        launch_options = f'run --command=/app/bin/uwu-launcher io.github.xXJSONDeruloXx.uwu-launcher --game {game.gameid}'
                 else:
                     if IS_STEAM_FLATPAK:
                         exe = '"flatpak-spawn"'
@@ -3692,7 +3708,8 @@ class Main(Gtk.ApplicationWindow, HiDpiMixin):
                         "Exe": exe,
                         "StartDir": game_directory,
                         "icon": icon,
-                        "LaunchOptions": launch_options
+                        "LaunchOptions": launch_options,
+                        "ShortcutPath": f"{UWU_SHORTCUT_MARKER}{game.gameid}",
                     })
                 else:
                     new_app_id = max([int(k) for k in shortcuts["shortcuts"].keys() if k.isdigit()] or [0]) + 1
@@ -3703,7 +3720,7 @@ class Main(Gtk.ApplicationWindow, HiDpiMixin):
                         "Exe": exe,
                         "StartDir": game_directory,
                         "icon": icon,
-                        "ShortcutPath": "",
+                        "ShortcutPath": f"{UWU_SHORTCUT_MARKER}{game.gameid}",
                         "LaunchOptions": launch_options,
                         "IsHidden": 0,
                         "AllowDesktopConfig": 1,
@@ -3737,7 +3754,7 @@ class Main(Gtk.ApplicationWindow, HiDpiMixin):
 
                         if "shortcuts" in shortcuts:
                             to_remove = [app_id for app_id, game_info in shortcuts["shortcuts"].items() if
-                                         isinstance(game_info, dict) and "AppName" in game_info and game_info["AppName"] == title]
+                                         is_uwu_shortcut(game_info, game.gameid)]
                             if to_remove:
                                 for app_id in to_remove:
                                     del shortcuts["shortcuts"][app_id]
@@ -3788,8 +3805,8 @@ class Main(Gtk.ApplicationWindow, HiDpiMixin):
             os.remove(hero_file_path)
 
     def remove_shortcut(self, game, shortcut):
-        applications_shortcut_path = f"{APP_DIR}/{game.gameid}.desktop"
-        desktop_shortcut_path = f"{DESKTOP_DIR}/{game.gameid}.desktop"
+        applications_shortcut_path = f"{APP_DIR}/uwu-{game.gameid}.desktop"
+        desktop_shortcut_path = f"{DESKTOP_DIR}/uwu-{game.gameid}.desktop"
 
         if shortcut == "appmenu":
             if os.path.exists(applications_shortcut_path):
@@ -4095,6 +4112,15 @@ class Settings(Gtk.Dialog):
         self.button_proton_manager = Gtk.Button(label=_("Proton Manager"))
         self.button_proton_manager.connect("clicked", self.on_button_proton_manager_clicked)
 
+        self.label_hv = Gtk.Label(label=_("CPUID Compatibility"))
+        self.label_hv.set_halign(Gtk.Align.START)
+        self.checkbox_hv_default = Gtk.CheckButton(label=_("Enable for new hosted games"))
+        self.checkbox_hv_default.set_tooltip_text(_(
+            "New games hosted by UwU acquire CPUID compatibility before launch by default."
+        ))
+        self.button_hv_manager = Gtk.Button(label=_("CPUID Compatibility Manager"))
+        self.button_hv_manager.connect("clicked", self.on_button_hv_manager_clicked)
+
         self.label_miscellaneous = Gtk.Label(label=_("Miscellaneous"))
         self.label_miscellaneous.set_halign(Gtk.Align.START)
 
@@ -4287,6 +4313,9 @@ class Settings(Gtk.Dialog):
         grid_runner.attach(self.label_runner, 0, 6, 1, 1)
         grid_runner.attach(self.combobox_runner, 0, 7, 1, 1)
         grid_runner.attach(self.button_proton_manager, 0, 8, 1, 1)
+        grid_runner.attach(self.label_hv, 0, 9, 1, 1)
+        grid_runner.attach(self.checkbox_hv_default, 0, 10, 1, 1)
+        grid_runner.attach(self.button_hv_manager, 0, 11, 1, 1)
 
         grid_lossless.attach(self.label_lossless, 0, 0, 1, 1)
         grid_lossless.attach(self.entry_lossless, 0, 1, 3, 1)
@@ -4294,6 +4323,7 @@ class Settings(Gtk.Dialog):
 
         self.combobox_runner.set_hexpand(True)
         self.button_proton_manager.set_hexpand(True)
+        self.button_hv_manager.set_hexpand(True)
         self.entry_lossless.set_hexpand(True)
 
         box_buttons.append(self.button_winetricks_default)
@@ -4490,7 +4520,7 @@ class Settings(Gtk.Dialog):
 
         if os.path.isdir(LOCALE_DIR):
             for lang in os.listdir(LOCALE_DIR):
-                if find_mo_file(LOCALE_DIR, lang, "faugus-launcher"):
+                if find_mo_file(LOCALE_DIR, lang, "uwu-launcher"):
                     lang_name = self.LANG_NAMES.get(lang, lang)
                     if lang != "en_US":
                         available_langs.append((lang_name, lang))
@@ -4584,6 +4614,7 @@ class Settings(Gtk.Dialog):
         config.set_value("show-hidden", self.checkbox_show_hidden.get_active())
         config.set_value("wayland-driver", self.checkbox_wayland_driver.get_active())
         config.set_value("enable-wow64", self.checkbox_enable_wow64.get_active())
+        config.set_value("hv-default", self.checkbox_hv_default.get_active())
         config.set_value("interface-mode", self.combobox_interface.get_active_id())
         config.set_value("background-mode", self.combobox_background.get_active_id())
         config.set_value("hero-enabled", self.checkbox_hero_background.get_active())
@@ -4632,6 +4663,11 @@ class Settings(Gtk.Dialog):
 
         dialog.connect("response", on_response)
         dialog.present()
+
+    def on_button_hv_manager_clicked(self, _widget):
+        from faugus.hv_manager import CompatibilityManager
+        manager = CompatibilityManager(self)
+        manager.present()
 
     def track_modifications(self, container):
         for child in widget_children(container):
@@ -4811,17 +4847,17 @@ class Settings(Gtk.Dialog):
 
             if not os.path.isfile(zip_file):
                 self.show_warning_dialog_settings(
-                    self, _("This is not a valid Faugus backup file."), False, lambda ok: None)
+                    self, _("This is not a valid UwU Launcher backup file."), False, lambda ok: None)
                 return
 
             temp_dir = os.path.join(FAUGUS_TEMP, "temp-restore")
             shutil.unpack_archive(zip_file, temp_dir, "zip")
 
-            marker_path = os.path.join(temp_dir, ".faugus_marker")
+            marker_path = os.path.join(temp_dir, ".uwu_marker")
             if not os.path.exists(marker_path):
                 shutil.rmtree(temp_dir)
                 self.show_warning_dialog_settings(
-                    self, _("This is not a valid Faugus backup file."), False, lambda ok: None)
+                    self, _("This is not a valid UwU Launcher backup file."), False, lambda ok: None)
                 return
 
             def on_confirm(ok):
@@ -4829,7 +4865,7 @@ class Settings(Gtk.Dialog):
                     return
 
                 for item in os.listdir(temp_dir):
-                    if item == ".faugus_marker":
+                    if item == ".uwu_marker":
                         continue
                     src = os.path.join(temp_dir, item)
 
@@ -4947,6 +4983,7 @@ class Settings(Gtk.Dialog):
         gamepad_navigation = cfg.config.get('gamepad-navigation', 'False') == 'True'
         wayland_driver = cfg.config.get('wayland-driver', 'False') == 'True'
         enable_wow64 = cfg.config.get('enable-wow64', 'False') == 'True'
+        hv_default = cfg.config.get('hv-default', 'True') == 'True'
         self.language = cfg.config.get('language', '')
         self.logging_warning = cfg.config.get('logging-warning', 'False') == 'True'
         start_minimized = cfg.config.get('start-minimized', 'False') == 'True'
@@ -4993,6 +5030,7 @@ class Settings(Gtk.Dialog):
         self.checkbox_gamepad_navigation.set_active(gamepad_navigation)
         self.checkbox_wayland_driver.set_active(wayland_driver)
         self.checkbox_enable_wow64.set_active(enable_wow64)
+        self.checkbox_hv_default.set_active(hv_default)
         self.combobox_interface.set_active_id(self.interface_mode)
         self.combobox_background.set_active_id(background_mode)
         self.checkbox_hero_background.set_active(hero_enabled)
@@ -5077,6 +5115,7 @@ class Game:
         pre_launch_command="",
         post_launch_command="",
         steam_user="",
+        hv_enabled=True,
     ):
         self.gameid = gameid
         self.title = title
@@ -5110,6 +5149,7 @@ class Game:
         self.pre_launch_command = pre_launch_command
         self.post_launch_command = post_launch_command
         self.steam_user = steam_user
+        self.hv_enabled = bool(hv_enabled)
 
 
 class DuplicateDialog(Gtk.Dialog):
@@ -5493,6 +5533,13 @@ class AddGame(Gtk.Dialog, HiDpiMixin):
         self.checkbox_disable_hidraw = Gtk.CheckButton(label=_("Disable Hidraw"))
         self.checkbox_disable_hidraw.set_tooltip_text(_("May fix gamepad issues with some games"))
         self.checkbox_prevent_sleep = Gtk.CheckButton(label=_("Prevent Sleep"))
+        self.checkbox_hv = Gtk.CheckButton(label=_("Use CPUID Compatibility"))
+        self.checkbox_hv.set_tooltip_text(_(
+            "Starts CPUID compatibility before this hosted game and stops it after the last enabled game exits."
+        ))
+        self.button_hv_setup = Gtk.Button(label=_("Set Up…"))
+        self.button_hv_setup.set_tooltip_text(_("Open the CPUID Compatibility Manager"))
+        self.button_hv_setup.connect("clicked", self.on_button_hv_setup_clicked)
 
         self.button_winecfg = Gtk.Button(label="Winecfg")
         self.button_winecfg.set_size_request(120, -1)
@@ -5845,7 +5892,10 @@ class AddGame(Gtk.Dialog, HiDpiMixin):
         self.checkbox_prevent_sleep.set_hexpand(True)
         self.grid_tools.attach(self.checkbox_disable_hidraw, 0, 3, 1, 1)
         self.checkbox_disable_hidraw.set_hexpand(True)
+        self.grid_tools.attach(self.checkbox_hv, 0, 4, 1, 1)
+        self.checkbox_hv.set_hexpand(True)
         self.grid_tools.attach(box_buttons, 2, 0, 1, 4)
+        self.grid_tools.attach(self.button_hv_setup, 2, 4, 1, 1)
 
         page2.append(self.grid_protonfix)
         page2.append(self.grid_game_arguments)
@@ -5885,6 +5935,7 @@ class AddGame(Gtk.Dialog, HiDpiMixin):
         self.checkbox_gamemode.set_active(self.default_gamemode)
         self.checkbox_prevent_sleep.set_active(self.default_prevent_sleep)
         self.checkbox_disable_hidraw.set_active(self.default_disable_hidraw)
+        self.checkbox_hv.set_active(self.default_hv)
 
         disable_mangohud_gamemode_if_missing(self)
 
@@ -6509,6 +6560,7 @@ class AddGame(Gtk.Dialog, HiDpiMixin):
         self.checkbox_gamemode.set_active(self.default_gamemode)
         self.checkbox_disable_hidraw.set_active(self.default_disable_hidraw)
         self.checkbox_prevent_sleep.set_active(self.default_prevent_sleep)
+        self.checkbox_hv.set_active(self.default_hv)
         self.button_shortcut_icon.set_child(self.set_image_shortcut_icon())
         if os.path.isfile(self.banner_path_temp):
             os.remove(self.banner_path_temp)
@@ -6545,6 +6597,10 @@ class AddGame(Gtk.Dialog, HiDpiMixin):
         self.grid_addapp.set_visible(False)
         self.checkbox_disable_hidraw.set_visible(False)
         self.checkbox_prevent_sleep.set_visible(True)
+        self.checkbox_hv.set_visible(active_id != "steam")
+        self.button_hv_setup.set_visible(active_id != "steam")
+        if active_id == "steam":
+            self.checkbox_hv.set_active(False)
         self.checkbox_shortcut_steam.set_visible(True)
         self.combobox_steam_user.set_visible(True)
         self.grid_page2.set_visible(True)
@@ -6652,6 +6708,12 @@ class AddGame(Gtk.Dialog, HiDpiMixin):
         self.default_gamemode = cfg.config.get('gamemode') == 'True'
         self.default_disable_hidraw = cfg.config.get('disable-hidraw') == 'True'
         self.default_prevent_sleep = cfg.config.get('prevent-sleep') == 'True'
+        self.default_hv = cfg.config.get('hv-default', 'True') == 'True'
+
+    def on_button_hv_setup_clicked(self, _widget):
+        from faugus.hv_manager import CompatibilityManager
+        manager = CompatibilityManager(self)
+        manager.present()
 
     def on_button_run_clicked(self, widget):
         validation_result = self.validate_fields(entry="prefix")
@@ -6776,8 +6838,8 @@ class AddGame(Gtk.Dialog, HiDpiMixin):
             return
 
         title_formatted = format_title(title)
-        desktop_file_path = f"{DESKTOP_DIR}/{title_formatted}.desktop"
-        applications_shortcut_path = f"{APP_DIR}/{title_formatted}.desktop"
+        desktop_file_path = f"{DESKTOP_DIR}/uwu-{title_formatted}.desktop"
+        applications_shortcut_path = f"{APP_DIR}/uwu-{title_formatted}.desktop"
 
         self.checkbox_shortcut_desktop.set_active(os.path.exists(desktop_file_path))
         self.checkbox_shortcut_appmenu.set_active(os.path.exists(applications_shortcut_path))
@@ -7027,7 +7089,11 @@ def run_file(file_path):
         command_parts.append(f'"{file_path}"')
 
     command = ' '.join(command_parts)
-    subprocess.Popen([sys.executable, "-m", "faugus.runner", command], cwd=file_dir, env=subprocess_env())
+    subprocess.Popen(
+        [sys.executable, "-m", "faugus.runner", command, "--hv", "--hv-game-id", format_title(os.path.basename(file_path))],
+        cwd=file_dir,
+        env=subprocess_env(),
+    )
 
 
 def main():

@@ -30,7 +30,7 @@ LAYOUT_SYMBOLS = [
 
 class VirtualKeyboard(Gtk.Dialog):
     def __init__(self, parent, entry, on_close=None, fetch_suggestions=None, on_suggestion_selected=None):
-        super().__init__(title="Faugus", transient_for=parent, modal=True)
+        super().__init__(title="UwU Launcher", transient_for=parent, modal=True)
         hide_dialog_action_area(self)
 
         self.entry = entry

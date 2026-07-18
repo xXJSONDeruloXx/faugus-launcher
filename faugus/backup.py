@@ -35,12 +35,12 @@ def perform_backup(dest_path):
             os.makedirs(os.path.dirname(dst), exist_ok=True)
             shutil.copy2(src, dst)
 
-    marker_path = os.path.join(temp_dir, ".faugus_marker")
+    marker_path = os.path.join(temp_dir, ".uwu_marker")
     with open(marker_path, "w") as f:
-        f.write("faugus-launcher-backup")
+        f.write("uwu-launcher-backup")
 
     current_date = datetime.now().strftime("%Y-%m-%d")
-    zip_path = os.path.join(FAUGUS_TEMP, f"faugus-launcher-{current_date}")
+    zip_path = os.path.join(FAUGUS_TEMP, f"uwu-launcher-{current_date}")
 
     shutil.make_archive(zip_path, "zip", temp_dir)
     shutil.rmtree(temp_dir)
@@ -55,15 +55,15 @@ def perform_backup(dest_path):
 
 def setup_autostart(enable):
     autostart_dir = os.path.expanduser("~/.config/autostart")
-    desktop_file = os.path.join(autostart_dir, "faugus-backup.desktop")
+    desktop_file = os.path.join(autostart_dir, "uwu-backup.desktop")
 
     if enable:
         os.makedirs(autostart_dir, exist_ok=True)
         with open(desktop_file, "w") as f:
             f.write("[Desktop Entry]\n")
             f.write("Type=Application\n")
-            f.write("Name=Faugus Backup Service\n")
-            f.write("Exec=python -m faugus.backup --daemon\n")
+            f.write("Name=UwU Backup Service\n")
+            f.write("Exec=uwu-launcher --backup-daemon\n")
             f.write("Hidden=false\n")
             f.write("NoDisplay=false\n")
             f.write("X-GNOME-Autostart-enabled=true\n")
@@ -133,7 +133,7 @@ def daemon_mode():
                     dest_dir = os.path.expanduser("~")
 
                 current_date = datetime.now().strftime("%Y-%m-%d")
-                zip_filename = f"faugus-launcher-{current_date}.zip"
+                zip_filename = f"uwu-launcher-{current_date}.zip"
                 dest_path = os.path.join(dest_dir, zip_filename)
 
                 new_date = perform_backup(dest_path)
@@ -144,7 +144,7 @@ def daemon_mode():
         time.sleep(14400)
 
 
-_ = setup_gettext('faugus-launcher')
+_ = setup_gettext('uwu-launcher')
 
 
 class BackupWindow(Gtk.Dialog):
@@ -183,7 +183,7 @@ class BackupWindow(Gtk.Dialog):
 
         dest_dir = self.config.get('backup-dest-dir', '')
         if not dest_dir:
-            dest_dir = os.path.expanduser(PathManager.user_home('Faugus Backup'))
+            dest_dir = os.path.expanduser(PathManager.user_home('UwU Backup'))
 
         self.box_dest = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=10)
         self.entry_dest = Gtk.Entry()
@@ -340,7 +340,7 @@ class BackupWindow(Gtk.Dialog):
             dest_dir = os.path.expanduser("~")
 
         current_date = datetime.now().strftime("%Y-%m-%d")
-        zip_filename = f"faugus-launcher-{current_date}.zip"
+        zip_filename = f"uwu-launcher-{current_date}.zip"
         dest_path = os.path.join(dest_dir, zip_filename)
 
         try:
@@ -378,7 +378,7 @@ class BackupWindow(Gtk.Dialog):
                 if not dest_dir:
                     dest_dir = os.path.expanduser("~")
                 current_date = datetime.now().strftime("%Y-%m-%d")
-                zip_filename = f"faugus-launcher-{current_date}.zip"
+                zip_filename = f"uwu-launcher-{current_date}.zip"
                 dest_path = os.path.join(dest_dir, zip_filename)
 
                 new_date = perform_backup(dest_path)

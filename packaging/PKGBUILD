@@ -1,0 +1,46 @@
+pkgname=uwu-launcher
+pkgver=2.0.0
+pkgrel=1
+pkgdesc='UMU game launcher with per-game CPUID Fault Emulation lifecycle management'
+arch=('any')
+url='https://github.com/xXJSONDeruloXx'
+license=('MIT' 'GPL-2.0-only' 'CC-BY-4.0')
+depends=(
+  'python'
+  'python-gobject'
+  'python-requests'
+  'python-pillow'
+  'python-vdf'
+  'python-psutil'
+  'python-pygame'
+  'python-cairo'
+  'libadwaita'
+  'libcanberra'
+  'imagemagick'
+  'icoextract'
+  'libayatana-appindicator'
+  'libmanette'
+  'vulkan-tools'
+  'polkit'
+  'systemd'
+  'kmod'
+)
+makedepends=('meson' 'ninja')
+optdepends=(
+  'dkms: persistent module builds on conventional distributions'
+  'podman: kernel-matched builds on Bazzite and SteamOS'
+  'git: build-container checkout on Bazzite and SteamOS'
+)
+install=uwu-launcher.install
+source=("${pkgname}-${pkgver}.tar")
+sha256sums=('SKIP')
+
+build() {
+  meson setup build "$srcdir/$pkgname-$pkgver" \
+    --prefix=/usr --buildtype=release --wrap-mode=nodownload
+  meson compile -C build
+}
+
+package() {
+  DESTDIR="$pkgdir" meson install -C build
+}

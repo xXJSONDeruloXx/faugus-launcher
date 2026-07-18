@@ -1,12 +1,11 @@
 project(
-  'faugus-launcher',
+  'uwu-launcher',
   version: '2.0.0',
   meson_version: '>=1.2.0',
   license: 'MIT',
   license_files: 'LICENSE',
 )
 
-py = import('python').find_installation()
 fs = import('fs')
 gnome = import('gnome')
 
@@ -16,9 +15,25 @@ subdir('data')
 subdir('faugus')
 
 install_data(
-  'faugus-launcher',
+  'uwu-launcher',
   install_mode: 'rwxr-xr-x',
   install_dir: get_option('bindir'),
+)
+
+install_data(
+  'hv/hv_helper.py',
+  install_mode: 'rwxr-xr-x',
+  install_dir: get_option('libdir') / 'uwu-launcher',
+)
+
+install_subdir(
+  'hv/cpuid_fault_emulation',
+  install_dir: get_option('libdir') / 'uwu-launcher',
+)
+
+install_data(
+  'data/systemd/uwu-hv-runtime.service',
+  install_dir: get_option('libdir') / 'systemd' / 'system',
 )
 
 install_data(

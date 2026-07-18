@@ -4,7 +4,7 @@ import shutil
 import vdf
 
 from faugus.path_manager import *
-from faugus.steam_setup import get_all_shortcut_paths
+from faugus.steam_setup import get_all_shortcut_paths, is_uwu_shortcut
 from faugus.utils import load_json_file, save_json_file
 
 
@@ -38,7 +38,7 @@ def update_steam_shortcut(game_title, new_start_dir, new_exe):
         changed = False
         if "shortcuts" in shortcuts:
             for app_id, game_info in shortcuts["shortcuts"].items():
-                if isinstance(game_info, dict) and game_info.get("AppName") == game_title:
+                if is_uwu_shortcut(game_info) and game_info.get("AppName") == game_title:
                     game_info["StartDir"] = new_start_dir
 
                     if "EALauncher.exe" in game_info.get("Exe", ""):
@@ -108,8 +108,8 @@ def update_ea_path(prefix):
             game_title = game.get("title") or game.get("name") or "EA App"
 
             if gameid:
-                applications_shortcut_path = f"{APP_DIR}/{gameid}.desktop"
-                desktop_shortcut_path = f"{DESKTOP_DIR}/{gameid}.desktop"
+                applications_shortcut_path = f"{APP_DIR}/uwu-{gameid}.desktop"
+                desktop_shortcut_path = f"{DESKTOP_DIR}/uwu-{gameid}.desktop"
 
                 if os.path.exists(applications_shortcut_path):
                     update_desktop_path(applications_shortcut_path, new_executable_dir)

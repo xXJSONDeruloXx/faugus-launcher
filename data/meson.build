@@ -1,32 +1,32 @@
 install_data(
-  'io.github.Faugus.faugus-launcher.metainfo.xml',
+  'io.github.xXJSONDeruloXx.uwu-launcher.metainfo.xml',
   install_dir: get_option('datadir') / 'metainfo',
 )
 
-icon_name = 'io.github.Faugus.faugus-launcher'
+icon_name = 'io.github.xXJSONDeruloXx.uwu-launcher'
 
-faugus_launcher_out = 'io.github.Faugus.faugus-launcher.desktop'
-faugus_shortcut_out = 'io.github.Faugus.faugus-launcher.shortcut.desktop'
+launcher_out = 'io.github.xXJSONDeruloXx.uwu-launcher.desktop'
+shortcut_out = 'io.github.xXJSONDeruloXx.uwu-launcher.shortcut.desktop'
 
-faugus_launcher_desktop = configure_file(
-  input: 'io.github.Faugus.faugus-launcher.desktop.in',
-  output: faugus_launcher_out,
+launcher_desktop = configure_file(
+  input: 'io.github.xXJSONDeruloXx.uwu-launcher.desktop.in',
+  output: launcher_out,
   configuration: {
     'ICON': icon_name,
-    'EXEC': 'faugus-launcher',
+    'EXEC': 'uwu-launcher',
   }
 )
 
-faugus_shortcut_desktop = configure_file(
-  input: 'io.github.Faugus.faugus-launcher.shortcut.desktop.in',
-  output: faugus_shortcut_out,
+shortcut_desktop = configure_file(
+  input: 'io.github.xXJSONDeruloXx.uwu-launcher.shortcut.desktop.in',
+  output: shortcut_out,
   configuration: {
     'ICON': icon_name,
   }
 )
 
 install_data(
-  faugus_launcher_desktop,
-  faugus_shortcut_desktop,
+  launcher_desktop,
+  shortcut_desktop,
   install_dir: get_option('datadir') / 'applications'
 )

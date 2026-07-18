@@ -1,8 +1,7 @@
 [Desktop Entry]
 Type=Application
-Name=Faugus
-Comment=Manage and play your Windows and Linux games easily
-Comment[pt_BR]=Gerencie e jogue seus jogos de Windows e Linux facilmente
+Name=UwU Launcher
+Comment=Run games with automatic CPUID compatibility
 Exec=@EXEC@ %f
 MimeType=application/x-ms-dos-executable;application/x-msi;application/x-ms-shortcut;application/x-bat;text/x-ms-regedit
 Icon=@ICON@

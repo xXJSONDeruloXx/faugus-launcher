@@ -6,8 +6,8 @@ import vdf
 from faugus.path_manager import PathManager, APP_DIR, DESKTOP_DIR, ICONS_DIR, SHORTCUT_ICONS_DIR
 
 _LEGACY_ICON_BASES = (
-    PathManager.user_config('faugus-launcher/icons'),
-    PathManager.user_config('faugus-launcher/icons-nolauncher'),
+    PathManager.user_config('uwu-launcher/icons'),
+    PathManager.user_config('uwu-launcher/icons-nolauncher'),
 )
 _NEW_ICON_BASES = (ICONS_DIR, SHORTCUT_ICONS_DIR)
 

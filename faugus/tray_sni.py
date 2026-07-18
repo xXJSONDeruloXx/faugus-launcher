@@ -8,7 +8,7 @@ from gi.repository import GdkPixbuf, Gio, GLib
 from faugus.path_manager import FAUGUS_MONO_ICON, FAUGUS_PNG, GAMES_JSON, LATEST_GAMES
 from faugus.language_config import setup_gettext
 
-_ = setup_gettext('faugus-launcher')
+_ = setup_gettext('uwu-launcher')
 
 ITEM_PATH = "/StatusNotifierItem"
 MENU_PATH = "/MenuBar"
@@ -210,9 +210,9 @@ class TrayIcon:
         if prop_name == "Category":
             return GLib.Variant("s", "ApplicationStatus")
         if prop_name == "Id":
-            return GLib.Variant("s", "faugus-launcher")
+            return GLib.Variant("s", "uwu-launcher")
         if prop_name == "Title":
-            return GLib.Variant("s", "Faugus")
+            return GLib.Variant("s", "UwU Launcher")
         if prop_name == "Status":
             return GLib.Variant("s", "Active")
         if prop_name == "WindowId":
@@ -227,7 +227,7 @@ class TrayIcon:
         if prop_name == "Menu":
             return GLib.Variant("o", MENU_PATH)
         if prop_name == "ToolTip":
-            return GLib.Variant("(sa(iiay)ss)", ("", [], "Faugus", ""))
+            return GLib.Variant("(sa(iiay)ss)", ("", [], "UwU Launcher", ""))
         return None
 
     def on_item_method_call(self, connection, sender, path, interface, method, params, invocation):
@@ -259,7 +259,7 @@ class TrayIcon:
             items.append({"id": item_id, "separator": True})
             item_id += 1
 
-        items.append({"id": item_id, "label": _("Open Faugus"), "action": self.on_present})
+        items.append({"id": item_id, "label": _("Open UwU Launcher"), "action": self.on_present})
         item_id += 1
         items.append({"id": item_id, "label": _("Quit"), "action": self.on_quit})
 
