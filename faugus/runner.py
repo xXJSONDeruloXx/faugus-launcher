@@ -23,6 +23,9 @@ from faugus.ea_fix import *
 from faugus.steam_setup import IS_STEAM_FLATPAK
 from faugus.migration import fix_legacy_shortcut_icons
 from faugus.hv_client import HvError, RuntimeLease
+from faugus.bundled_runners import (
+    RunnerDownloadError, ensure_release_runner, release_runner_name,
+)
 
 if IS_FLATPAK:
     GLib.set_prgname("io.github.xXJSONDeruloXx.uwu-launcher")
@@ -166,6 +169,39 @@ class FaugusRun(HiDpiMixin):
         if os.environ.get("PROTONPATH") == "UMU-Proton Latest":
             os.environ.pop("PROTONPATH", None)
             _env_set.discard("PROTONPATH")
+
+        try:
+            release_runner = release_runner_name(os.environ.get("PROTONPATH"))
+        except RunnerDownloadError as error:
+            print(error, flush=True)
+            self.close_splash_window()
+            self.show_error_dialog(_("release runner"), network_error=True, detail=str(error))
+            return
+
+        if release_runner:
+            last_percent = [-1]
+
+            def download_progress(downloaded, total):
+                percent = int(downloaded * 100 / total) if total else 0
+                if percent == last_percent[0]:
+                    return
+                last_percent[0] = percent
+
+                def update_ui():
+                    if self.splash_window:
+                        self.label.set_text(_("Downloading %s… %d%%") % (release_runner, percent))
+                    return False
+
+                GLib.idle_add(update_ui)
+
+            try:
+                installed_runner = ensure_release_runner(release_runner, progress=download_progress)
+                set_env("PROTONPATH", str(installed_runner))
+            except RunnerDownloadError as error:
+                print(error, flush=True)
+                self.close_splash_window()
+                self.show_error_dialog(release_runner, network_error=True, detail=str(error))
+                return
 
         if not os.environ.get("GAMEID"):
             set_env("PROTONFIXES_DISABLE", "1")
@@ -451,11 +487,12 @@ class FaugusRun(HiDpiMixin):
             self.cfg.set_value("show-donate", False)
             self.cfg.save_config()
 
-    def show_error_dialog(self, protonpath=None, network_error=False):
+    def show_error_dialog(self, protonpath=None, network_error=False, detail=""):
         done = Event()
 
         if network_error:
-            text1, text2 = _("Internet connection error."), ""
+            text1 = _("Could not install %s.") % protonpath
+            text2 = detail or _("Internet connection error.")
         else:
             text1 = _("%s was not found.") % protonpath
             text2 = _("Please install it or use another Proton version.")
@@ -810,7 +847,7 @@ def build_launch_command(game):
             command_parts.append(f"PROTONPATH={PROTON_CACHYOS}")
         else:
             command_parts.append(f"WINEPREFIX={shlex.quote(prefix)}")
-            command_parts.append(f"PROTONPATH='{runner}'")
+            command_parts.append(f"PROTONPATH={shlex.quote(str(resolve_protonpath(runner)))}")
     else:
         command_parts.append(f"WINEPREFIX={shlex.quote(prefix)}")
     command_parts.extend(build_lossless_env(lossless_enabled, lossless_multiplier, lossless_flow, lossless_performance, lossless_hdr, lossless_present))

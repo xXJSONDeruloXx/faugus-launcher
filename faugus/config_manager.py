@@ -11,7 +11,7 @@ class ConfigManager:
             'gamemode': 'False',
             'disable-hidraw': 'False',
             'prevent-sleep': 'False',
-            'default-runner': 'Proton-CachyOS Latest',
+            'default-runner': BUNDLED_CACHYOS_RUNNER,
             'lossless-location': '',
             'discrete-gpu': 'False',
             'splash-disable': 'False',
@@ -61,6 +61,13 @@ class ConfigManager:
         self.config = load_json_file(CONFIG_FILE_DIR, default={})
 
         updated = False
+        if self.config.get('default-runner') in {
+            'Proton-CachyOS Latest',
+            'Proton-CachyOS Latest (default)',
+        }:
+            self.config['default-runner'] = BUNDLED_CACHYOS_RUNNER
+            updated = True
+
         for key, default_value in self.default_config.items():
             if key not in self.config:
                 self.config[key] = default_value

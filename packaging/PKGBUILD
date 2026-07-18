@@ -1,6 +1,6 @@
 pkgname=uwu-launcher
 pkgver=2.0.0
-pkgrel=1
+pkgrel=2
 pkgdesc='UMU game launcher with per-game CPUID Fault Emulation lifecycle management'
 arch=('any')
 url='https://github.com/xXJSONDeruloXx'

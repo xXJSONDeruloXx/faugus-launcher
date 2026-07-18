@@ -1,5 +1,6 @@
 install_data(
   'backup.py',
+  'bundled_runners.py',
   'components.py',
   'config_manager.py',
   'ea_fix.py',

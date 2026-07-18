@@ -2,7 +2,7 @@
 set -eu
 
 root=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
-work=${TMPDIR:-/tmp}/uwu-launcher-package
+work=${UWU_BUILD_ROOT:-$HOME/.cache/uwu-launcher-package}
 out=${PKGDEST:-$HOME/uwu-packages}
 version=2.0.0
 
@@ -28,4 +28,4 @@ trap 'rm -f "$list"' EXIT HUP INT TERM
     PKGDEST="$out" makepkg --cleanbuild --force --noconfirm
 )
 
-printf 'Built %s\n' "$out/uwu-launcher-$version-1-any.pkg.tar.zst"
+printf 'Built %s\n' "$out/uwu-launcher-$version-2-any.pkg.tar.zst"

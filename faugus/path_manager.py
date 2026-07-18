@@ -164,6 +164,10 @@ PROTON_CACHYOS = PathManager.system_data('steam/compatibilitytools.d/proton-cach
 UMU_RUN = PathManager.user_data('uwu-launcher/umu-run')
 # UwU keeps downloaded Proton builds private so it can coexist with Faugus.
 COMPATIBILITY_DIR = Path(PathManager.user_data('uwu-launcher/runners'))
+# Release assets are downloaded on demand into UwU's private runner directory.
+BUNDLED_RUNNERS_DIR = COMPATIBILITY_DIR
+BUNDLED_CACHYOS_RUNNER = 'cachyos_11.0_20260702-LinUwUx'
+BUNDLED_GE_RUNNER = 'GE-Proton11-1-LinUwUx'
 MANGOHUD_DIR = PathManager.find_binary('mangohud')
 GAMEMODERUN = PathManager.find_binary('gamemoderun')
 LAUNCHER_PATH = PathManager.find_binary('uwu-launcher')

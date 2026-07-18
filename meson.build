@@ -41,6 +41,12 @@ install_data(
   install_dir: get_option('datadir') / 'licenses' / meson.project_name(),
 )
 
+install_data(
+  'runners/manifest.json',
+  install_dir: get_option('datadir') / 'uwu-launcher',
+  rename: 'runner-manifest.json',
+)
+
 gnome.post_install(
   gtk_update_icon_cache: true,
 )

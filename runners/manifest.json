@@ -1,0 +1,23 @@
+{
+  "version": 2,
+  "default": "cachyos_11.0_20260702-LinUwUx",
+  "release": {
+    "repository": "xXJSONDeruloXx/faugus-launcher",
+    "tag": "uwu-runners-20260702",
+    "base_url": "https://github.com/xXJSONDeruloXx/faugus-launcher/releases/download/uwu-runners-20260702"
+  },
+  "runners": [
+    {
+      "filename": "cachyos_11.0_20260702-LinUwUx.tar.xz",
+      "root": "cachyos_11.0_20260702-LinUwUx",
+      "sha256": "617301bf86bb1bd1d36ab1a6270425191e8b53d764d619fe39df4693c875449e",
+      "size": 324844332
+    },
+    {
+      "filename": "GE-Proton11-1-LinUwUx.tar.gz",
+      "root": "GE-Proton11-1-LinUwUx",
+      "sha256": "8742e23a219828a93c9507410049c4e6d7718228b1c02815de226402b1f98007",
+      "size": 528999535
+    }
+  ]
+}

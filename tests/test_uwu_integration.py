@@ -16,6 +16,7 @@ os.environ["XDG_STATE_HOME"] = str(Path(_TEST_ROOT.name) / "state")
 from faugus import hv_client
 from faugus.config_manager import ConfigManager
 from faugus.steam_setup import is_uwu_shortcut
+from faugus import utils
 from faugus.utils import GAME_FIELDS, prepare_game_kwargs
 
 
@@ -29,9 +30,28 @@ class UwUIntegrationTests(unittest.TestCase):
         values = prepare_game_kwargs({"gameid": "test", "hv_enabled": False})
         self.assertIs(values["hv_enabled"], False)
 
-    def test_new_game_default_is_enabled(self):
+    def test_new_game_and_runner_defaults(self):
         config = ConfigManager()
         self.assertEqual(config.config["hv-default"], "True")
+        self.assertEqual(config.config["default-runner"], "cachyos_11.0_20260702-LinUwUx")
+
+    def test_release_runners_use_uwu_private_data_path(self):
+        self.assertEqual(utils.BUNDLED_RUNNERS_DIR, utils.COMPATIBILITY_DIR)
+        self.assertIn("uwu-launcher/runners", str(utils.BUNDLED_RUNNERS_DIR))
+        self.assertNotIn("Faugus", str(utils.BUNDLED_RUNNERS_DIR))
+
+    def test_bundled_runner_resolves_to_absolute_path(self):
+        with tempfile.TemporaryDirectory() as directory:
+            bundled = Path(directory) / "bundled"
+            user = Path(directory) / "user"
+            runner = bundled / "cachyos_11.0_20260702-LinUwUx"
+            runner.mkdir(parents=True)
+            old_bundled, old_user = utils.BUNDLED_RUNNERS_DIR, utils.COMPATIBILITY_DIR
+            utils.BUNDLED_RUNNERS_DIR, utils.COMPATIBILITY_DIR = bundled, user
+            try:
+                self.assertEqual(utils.resolve_protonpath(runner.name), str(runner))
+            finally:
+                utils.BUNDLED_RUNNERS_DIR, utils.COMPATIBILITY_DIR = old_bundled, old_user
 
     def test_steam_shortcut_ownership_does_not_claim_faugus(self):
         self.assertFalse(is_uwu_shortcut({
@@ -94,6 +114,7 @@ class UwUIntegrationTests(unittest.TestCase):
         self.assertNotIn("site-packages", (ROOT / "faugus/meson.build").read_text())
         wrapper = (ROOT / "uwu-launcher").read_text()
         self.assertIn("../lib/uwu-launcher", wrapper)
+        self.assertIn("arch=('any')", (ROOT / "packaging/PKGBUILD").read_text())
 
 
 if __name__ == "__main__":

@@ -9,7 +9,12 @@ from concurrent.futures import ThreadPoolExecutor
 import gi
 gi.require_version('Gtk', '4.0')
 gi.require_version('Adw', '1')
-from faugus.path_manager import PathManager, GAMES_JSON, PRESETS_FILE, COMPATIBILITY_DIR, PROTON_CACHYOS, MANGOHUD_DIR, GAMEMODERUN, ICONS_DIR, BANNERS_DIR, FAUGUS_NOTIFICATION, FILECHOOSER_FOLDERS_FILE
+from faugus.path_manager import (
+    PathManager, GAMES_JSON, PRESETS_FILE, COMPATIBILITY_DIR,
+    BUNDLED_RUNNERS_DIR, BUNDLED_CACHYOS_RUNNER, BUNDLED_GE_RUNNER,
+    PROTON_CACHYOS, MANGOHUD_DIR, GAMEMODERUN, ICONS_DIR, BANNERS_DIR,
+    FAUGUS_NOTIFICATION, FILECHOOSER_FOLDERS_FILE,
+)
 from gi.repository import Gtk, Gdk, Gio, GLib, GdkPixbuf, Pango, GObject, Adw
 
 
@@ -1032,7 +1037,22 @@ def update_games_json():
 
 
 def resolve_protonpath(runner):
-    return PROTON_CACHYOS if runner == "Proton-CachyOS (System)" else runner
+    if runner == "Proton-CachyOS (System)":
+        return PROTON_CACHYOS
+    if not runner:
+        return runner
+    if runner == "Proton-CachyOS Latest (default)":
+        runner = "Proton-CachyOS Latest"
+
+    requested = Path(os.path.expanduser(str(runner)))
+    if requested.is_absolute() and requested.is_dir():
+        return str(requested)
+
+    for base in dict.fromkeys((BUNDLED_RUNNERS_DIR, COMPATIBILITY_DIR)):
+        candidate = base / str(runner)
+        if candidate.is_dir():
+            return str(candidate)
+    return runner
 
 
 def version_key(v):
@@ -1042,22 +1062,34 @@ def version_key(v):
 
 
 def populate_combobox_with_runners(combobox):
-    combobox.append_text("Proton-CachyOS Latest (default)")
-    combobox.append_text("GE-Proton Latest")
-    combobox.append_text("Proton-EM Latest")
-    combobox.append_text("DW-Proton Latest")
-    combobox.append_text("UMU-Proton Latest")
-
+    preferred = [
+        BUNDLED_CACHYOS_RUNNER,
+        BUNDLED_GE_RUNNER,
+        "Proton-CachyOS Latest",
+        "GE-Proton Latest",
+        "Proton-EM Latest",
+        "DW-Proton Latest",
+        "UMU-Proton Latest",
+    ]
     if os.path.exists(PROTON_CACHYOS):
-        combobox.append_text("Proton-CachyOS (System)")
+        preferred.append("Proton-CachyOS (System)")
 
+    seen = set()
+    for runner in preferred:
+        if runner not in seen:
+            combobox.append_text(runner)
+            seen.add(runner)
+
+    versions = []
     try:
-        if os.path.exists(COMPATIBILITY_DIR):
-            versions = []
-            for entry in os.listdir(COMPATIBILITY_DIR):
-                entry_path = os.path.join(COMPATIBILITY_DIR, entry)
+        for base in dict.fromkeys((BUNDLED_RUNNERS_DIR, COMPATIBILITY_DIR)):
+            if not base.is_dir():
+                continue
+            for entry in os.listdir(base):
+                entry_path = base / entry
                 if (
-                    os.path.isdir(entry_path)
+                    entry_path.is_dir()
+                    and entry not in seen
                     and entry not in ("UMU-Latest", "LegacyRuntime")
                     and not entry.startswith("Proton-GE Latest")
                     and not entry.startswith("Proton-EM Latest")
@@ -1065,13 +1097,12 @@ def populate_combobox_with_runners(combobox):
                     and not entry.startswith("Proton-CachyOS Latest")
                 ):
                     versions.append(entry)
+                    seen.add(entry)
+    except OSError as error:
+        print(f"Error accessing the runners directory: {error}")
 
-            versions.sort(key=version_key, reverse=True)
-
-            for version in versions:
-                combobox.append_text(version)
-    except Exception as e:
-        print(f"Error accessing the directory: {e}")
+    for version in sorted(versions, key=version_key, reverse=True):
+        combobox.append_text(version)
 
     combobox.set_active(0)
     combobox.configure_ellipsize(20)

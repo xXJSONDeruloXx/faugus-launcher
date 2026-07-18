@@ -50,9 +50,6 @@ _ = setup_gettext('uwu-launcher')
 
 
 def convert_runner(runner):
-    if runner == "Proton-CachyOS Latest":
-        return "Proton-CachyOS Latest (default)"
-
     if runner == "Proton-CachyOS Latest (default)":
         return "Proton-CachyOS Latest"
 
